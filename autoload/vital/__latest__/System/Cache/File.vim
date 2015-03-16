@@ -49,12 +49,7 @@ function! s:cache.get(name, ...) dict " {{{
   "   - name: a name of a cache
   "   - default: a default value (optional)
   let default = get(a:000, 0, '')
-  let options = get(a:000, 1, { 'raw': 0 })
-  if s:Prelude.is_dict(default)
-    let options = default
-    unlet default
-    let default = ''
-  endif
+  let options = extend({ 'raw': 0 }, get(a:000, 1, {}))
   let cache_key = self.cache_key(a:name)
   let raw = s:Cache.readfile(self.cache_dir, cache_key)
   if empty(raw)
@@ -73,7 +68,7 @@ function! s:cache.set(name, value, ...) dict " {{{
   "   - name: a name of a cache
   "   - value: a value which will be cached
   let cache_key = self.cache_key(a:name)
-  let options = get(a:000, 0, { 'raw': 0 })
+  let options = extend({ 'raw': 0 }, get(a:000, 1, {}))
   if options.raw
     let value = a:value
   else
