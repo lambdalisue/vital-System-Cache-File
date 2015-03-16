@@ -1,0 +1,127 @@
+" Use vim-themis to execute this test
+let s:V = vital#of('vital')
+let s:P = s:V.import('System.Filepath')
+
+Describe System.Cache.File
+  let s:C = s:V.import('System.Cache.File')
+
+  Context .hash({str})
+    It should return an empty string if {str} is empty
+      let hash = s:C.hash('')
+      Assert Equals(hash, '')
+    End
+
+    It should return a substitution if the length of {str} is less than 150
+      let hash = s:C.hash('hello')
+      Assert Equals(hash, 'hello')
+
+      let hash = s:C.hash('foo:bar')
+      Assert Equals(hash, 'foo=-bar')
+
+      let hash = s:C.hash('foo/bar')
+      Assert Equals(hash, 'foo=+bar')
+
+      let hash = s:C.hash('foo\bar')
+      Assert Equals(hash, 'foo=+bar')
+    End
+
+    It should return a hash if the length of {str} is 150 or over
+      let obj = repeat('a', 200)
+      let hash = s:C.hash(obj)
+      Assert True(strlen(hash) < strlen(obj))
+    End
+  End
+
+  Context .new({config})
+    It should return an instance
+      let cache_dir = fnamemodify('.cache', ':p')
+      let cache = s:C.new(cache_dir)
+      Assert HasKey(cache, 'cache_dir')
+    End
+  End
+
+  Context instance
+    Before each
+      let cache_dir = fnamemodify('.cache', ':p')
+      let cache = s:C.new(cache_dir)
+    End
+
+    Context .cache_key(str)
+      It should return an original string in default
+        let r = cache.cache_key('foo')
+        Assert Equals(r, 'foo')
+      End
+    End
+
+    Context .has(name)
+      It should return 0 if a named cache is not found
+        let r = cache.has('foo')
+        Assert False(r)
+      End
+
+      It should return 1 if a named cache is found
+        let filename = s:P.join(cache_dir, 'foo')
+        call writefile(["'bar'"], filename)
+        let r = cache.has('foo')
+        Assert True(r)
+        call delete(filename)
+      End
+    End
+
+    Context .get(name)
+      It should return an empty string if a named cache is not found
+        let r = cache.get('foo')
+        Assert Equals(r, '')
+      End
+
+      It should return 'default' if a named cache is not found and 'default' is specified
+        let r1 = cache.get('foo', 'hello')
+        Assert Equals(r1, 'hello')
+
+        let r2 = cache.get('foo', 0)
+        Assert Equals(r2, 0)
+      End
+
+      It should return a value if a named cache is found
+        let filename = s:P.join(cache_dir, 'foo')
+        call writefile(["'bar'"], filename)
+        let r = cache.get('foo')
+        Assert Equals(r, 'bar')
+        call delete(filename)
+      End
+    End
+
+    Context .set(name, value)
+      It should save 'value' into a cache file with given 'name'
+        let filename = s:P.join(cache_dir, 'foo')
+        call cache.set('foo', 'foo')
+        Assert Equals(readfile(filename), ["'foo'"])
+      End
+    End
+
+    Context .remove(name)
+      It should do nothing if a named cache is not found
+        call cache.remove('foo')
+      End
+
+      It should remove a named cache from a cache directory
+        let filename = s:P.join(cache_dir, 'foo')
+        call writefile(["'bar'"], filename)
+        call cache.remove('foo')
+        Assert !filereadable(filename)
+      End
+    End
+
+    Context .clear(name)
+      It should clear a cache directory
+        let filename1 = s:P.join(cache_dir, 'foo')
+        let filename2 = s:P.join(cache_dir, 'bar')
+        call writefile(["'foo'"], filename1)
+        call writefile(["'bar'"], filename2)
+        call cache.clear()
+        Assert !filereadable(filename1)
+        Assert !filereadable(filename2)
+      End
+    End
+  End
+End
