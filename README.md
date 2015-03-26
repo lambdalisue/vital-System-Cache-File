@@ -2,6 +2,8 @@ vital-System-Cache-File
 ==============================================================================
 [![Build Status](https://travis-ci.org/lambdalisue/vital-System-Cache-File.svg)](https://travis-ci.org/lambdalisue/vital-System-Cache-File)
 
+**Obsolute: Use https://github.com/lambdalisue/vital-System-Cache-Unified**
+
 A file based cache system
 
 - Version:  0.2.0
