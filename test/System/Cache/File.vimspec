@@ -5,6 +5,31 @@ let s:P = s:V.import('System.Filepath')
 Describe System.Cache.File
   let s:C = s:V.import('System.Cache.File')
 
+  Context Usage (Factorial)
+    let s:factorial_cache = s:C.new(fnamemodify('.cache', ':p'))
+    function! s:factorial_cache.cache_key(n)
+      " Convert n (int) into cache_key (str)
+      return "" . a:n
+    endfunction
+
+    function! s:factorial(n)
+      if a:n == 0
+        return 1
+      elseif s:factorial_cache.has(a:n)
+        return s:factorial_cache.get(a:n)
+      else
+        let x = s:factorial(a:n - 1) * a:n
+        call s:factorial_cache.set(a:n, x)
+        return x
+      endif
+    endfunction
+
+    It should return correct factorial value
+      let r = s:factorial(10)
+      Assert Equals(r, 1*2*3*4*5*6*7*8*9*10)
+    End
+  End
+
   Context .hash({str})
     It should return an empty string if {str} is empty
       let hash = s:C.hash('')
