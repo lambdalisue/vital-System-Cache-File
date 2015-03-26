@@ -14,6 +14,7 @@ function! s:_vital_loaded(V) dict abort " {{{
   let s:Prelude = a:V.import('Prelude')
   let s:String = a:V.import('Data.String')
   let s:File = a:V.import('System.File')
+  let s:Path = a:V.import('System.Filepath')
   let s:Cache = a:V.import('System.Cache')
   let s:Simple = a:V.import('System.Cache.Simple')
 endfunction " }}}
@@ -21,7 +22,10 @@ function! s:_vital_depends() abort " {{{
   return [
         \ 'Prelude',
         \ 'Data.String',
+        \ 'System.File',
+        \ 'System.Filepath',
         \ 'System.Cache',
+        \ 'System.Cache.Simple',
         \]
 endfunction " }}}
 
@@ -88,6 +92,10 @@ function! s:cache.remove(name) dict " {{{
 endfunction " }}}
 function! s:cache.clear() dict " {{{
   call s:File.rmdir(self.cache_dir, 'r')
+endfunction " }}}
+function! s:cache.keys() dict " {{{
+  let keys = glob(s:Path.join(self.cache_dir, '*'), 0, 1)
+  return map(keys, 'fnamemodify(v:val, ":t")')
 endfunction " }}}
 
 let &cpo = s:save_cpo

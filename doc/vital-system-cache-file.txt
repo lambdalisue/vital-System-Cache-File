@@ -161,6 +161,10 @@ set({name}, {value})		*Vital.System.Cache.File.set()*
 	the cache file. Otherwise it translate {value} into re-constructable
 	format.
 
+keys()				*Vital.System.Cache.File.keys()*
+
+	Return a list of cache keys
+
 remove({name})			*Vital.System.Cache.File.remove()*
 
 	Remove {name} from a cache directory. It does nothing when the
@@ -171,7 +175,7 @@ remove({name})			*Vital.System.Cache.File.remove()*
 	|Vital.System.Cache.File.cache_key()| method thus {name} is not
 	required to be |String|.
 
-clear()		        	*Vital.System.Cache.File.clear()*
+clear()				*Vital.System.Cache.File.clear()*
 
 	Clear all files in the cache directory without prompts.
 
