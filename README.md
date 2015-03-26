@@ -4,7 +4,7 @@ vital-System-Cache-File
 
 A file based cache system
 
-- Version:  0.1.0
+- Version:  0.2.0
 - Author:   Alisue <lambdalisue@hashnote.net>
 - Support:  Vim 7.3 and above
 

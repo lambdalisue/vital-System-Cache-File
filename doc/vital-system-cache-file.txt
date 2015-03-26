@@ -1,6 +1,6 @@
 *vital-system-cache-file.txt*	A file based cache system
 
-Version: 0.1.0
+Version: 0.2.0
 Author:  Alisue <lambdalisue@hashnote.net>   *Vital.System.Cache.File-author*
 Support: Vim 7.3 and above
 License: MIT license  {{{
@@ -120,7 +120,7 @@ has({name})			*Vital.System.Cache.File.has()*
 	|Vital.System.Cache.File.cache_key()| method thus {name} is not
 	required to be |String|.
 
-get({name}, [, {default}, {options}])	*Vital.System.Cache.File.get()*
+get({name}[, {default}, {options}])	*Vital.System.Cache.File.get()*
 
 	Return a cached value of {name} in a cache directory. It return
 	{default} if no value is found.
@@ -141,7 +141,7 @@ get({name}, [, {default}, {options}])	*Vital.System.Cache.File.get()*
 	0 or 1. If 1 is specified, this function return a raw contents of the
 	cache file (return value of |readfile|).
 
-set({name}, {value})		*Vital.System.Cache.File.set()*
+set({name}, {value}[, {options}])		*Vital.System.Cache.File.set()*
 
 	Save {value} into a cache directory as {name}.
 
