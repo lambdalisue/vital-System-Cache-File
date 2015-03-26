@@ -72,7 +72,7 @@ function! s:cache.set(name, value, ...) dict " {{{
   "   - name: a name of a cache
   "   - value: a value which will be cached
   let cache_key = self.cache_key(a:name)
-  let options = extend({ 'raw': 0 }, get(a:000, 1, {}))
+  let options = extend({ 'raw': 0 }, get(a:000, 0, {}))
   if options.raw
     let value = a:value
   else

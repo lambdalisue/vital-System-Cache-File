@@ -43,19 +43,22 @@ Describe System.Cache.File
   Context instance
     Before each
       let cache_dir = fnamemodify('.cache', ':p')
+      if !isdirectory(cache_dir)
+        call mkdir(cache_dir, 'p')
+      endif
       let cache = s:C.new(cache_dir)
     End
 
-    Context .cache_key(str)
+    Context .cache_key({str})
       It should return an original string in default
         let r = cache.cache_key('foo')
         Assert Equals(r, 'foo')
       End
     End
 
-    Context .has(name)
+    Context .has({name})
       It should return 0 if a named cache is not found
-        let r = cache.has('foo')
+        let r = cache.has('undefined_cache_name')
         Assert False(r)
       End
 
@@ -68,7 +71,7 @@ Describe System.Cache.File
       End
     End
 
-    Context .get(name)
+    Context .get({name}[, {default}, {options}])
       It should return an empty string if a named cache is not found
         let r = cache.get('foo')
         Assert Equals(r, '')
@@ -89,17 +92,35 @@ Describe System.Cache.File
         Assert Equals(r, 'bar')
         call delete(filename)
       End
+
+      It should return a raw value if 'raw' is specified
+        let filename = s:P.join(cache_dir, 'foo')
+        call writefile(["'bar'"], filename)
+        let r = cache.get('foo', '', { 'raw': 1 })
+        Assert Equals(r, ["'bar'"])
+        call delete(filename)
+      End
     End
 
-    Context .set(name, value)
+    Context .set({name}, {value}[, {options}])
       It should save 'value' into a cache file with given 'name'
         let filename = s:P.join(cache_dir, 'foo')
         call cache.set('foo', 'foo')
         Assert Equals(readfile(filename), ["'foo'"])
+
+        call delete(filename)
+      End
+
+      It should save raw 'value' if 'raw' is specified
+        let filename = s:P.join(cache_dir, 'foo')
+        call cache.set('foo', ['foo'], { 'raw': 1 })
+        Assert Equals(readfile(filename), ["foo"])
+
+        call delete(filename)
       End
     End
 
-    Context .remove(name)
+    Context .remove({name})
       It should do nothing if a named cache is not found
         call cache.remove('foo')
       End
@@ -112,7 +133,7 @@ Describe System.Cache.File
       End
     End
 
-    Context .clear(name)
+    Context .clear({name})
       It should clear a cache directory
         let filename1 = s:P.join(cache_dir, 'foo')
         let filename2 = s:P.join(cache_dir, 'bar')
@@ -121,6 +142,21 @@ Describe System.Cache.File
         call cache.clear()
         Assert !filereadable(filename1)
         Assert !filereadable(filename2)
+      End
+    End
+
+    Context .keys()
+      It should return a list of cache keys
+        let filename1 = s:P.join(cache_dir, 'foo')
+        let filename2 = s:P.join(cache_dir, 'bar')
+        call writefile(["'foo'"], filename1)
+        call writefile(["'bar'"], filename2)
+
+        let keys = cache.keys()
+        Assert Equals(sort(keys), sort(['foo', 'bar']))
+
+        call delete(filename1)
+        call delete(filename2)
       End
     End
   End
